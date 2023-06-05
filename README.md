@@ -1,5 +1,5 @@
 # excel-to-oracle-query
-Small script developed to convert an excel sheet into a table on Oracle SQL, formatting values as needed
+Small script developed to convert an excel sheet into a insert query on Oracle SQL, formatting values as needed.
 
 ## comments about code
 - Excel file is read using Pandas dataframes.
