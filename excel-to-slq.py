@@ -1,4 +1,6 @@
 import pandas as pd
+import codecs
+
 
 df = pd.read_excel("./Resultados_MEGASENA.xlsx")
 
@@ -31,22 +33,27 @@ df = df.fillna('NULL')
 
 def format_string(value):
     if value != 'NULL':
+        value = value.replace("'","").replace("`","")
         return "\'" + str(value) + "\'"
     else: 
         return 'NULL'
     
 def format_money(value):
     if value != 'NULL':
-        return str(value).replace("R$","").replace(",","").replace(".","")
+        return str(value).replace("R$","").replace(".","").replace(",",".")
     else: 
         return 'NULL'
 
+
+c = 0
+num = 1
+file = f"output{num}.txt"
+f = codecs.open(file, "x", "utf-8")
+
 for ind in df.index:
-    if ind == 0:
-        continue
-    insert_string = "INSERT INTO MEGASENA (Numero_concurso,Data_sorteio,Coluna1,Coluna2,Coluna3,Coluna4,Coluna5,Coluna6,Ganhadores_Faixa1,Ganhadores_Faixa2,Ganhadores_Faixa3,Rateio_Faixa1,Rateio_Faixa2,Rateio_Faixa3,Cidade,Valor_arrecadado,Estimativa_prox_concurso,Valor_acumulado_prox_concurso,Acumulado,Sorteio_especial,Observacao) VALUES ("
+    insert_string = "INSERT INTO MEGASENA VALUES ("
     insert_string += str(df['Concurso'][ind]) + ","
-    insert_string += "TO_DATE(\'" + str(df['Data do Sorteio'][ind].strftime("%d-%m-%Y")) + "\','DD-MM-YYYY\')" + ","
+    insert_string += "TO_DATE(\'" + str(df['Data do Sorteio'][ind].strftime("%d/%m/%Y")) + "\','DD/MM/YYYY\')" + ","
     insert_string += str(df['Coluna1'][ind]) + ","
     insert_string += str(df['Coluna2'][ind]) + ","
     insert_string += str(df['Coluna3'][ind]) + ","
@@ -69,3 +76,14 @@ for ind in df.index:
     insert_string += ");"
     
     print(insert_string)
+    f.write(insert_string + '\n')
+    c+=1
+
+    if (c % 100) == 0:
+        num+=1
+        f.close()
+        file = f"output{num}.txt"
+        f = codecs.open(file, "x", "utf-8")
+
+
+f.close()
